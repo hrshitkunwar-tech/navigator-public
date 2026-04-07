@@ -1,138 +1,211 @@
 # Navigator
 
-AI execution layer for SaaS interfaces — so anyone, human or agent, can operate any software tool without needing to know it.
+AI execution layer for SaaS interfaces — so anyone, human or agent, can operate software without already knowing how the tool works.
 
-**Status:** Early Access — building in public. Architecture and benchmarks are open; implementation is private.
-**Last updated:** April 2026
+**Status:** Early Access — building in public.  
+**Implementation:** Private for now. Architecture, benchmarks, and technical decisions are public.  
+**Last updated:** April 6, 2026
+
+| Proof Surface | Current State |
+|---|---|
+| Public docs | **6 docs** in [`docs/`](./docs/) |
+| Retrieval benchmark | **CLaRa 0.61** vs classic RAG **0.51** |
+| License | **MIT** |
+| Public work tracker | **4 open issues** |
+| Repo purpose | Public thesis + proof layer |
+
+---
+
+## Updates
+
+- **April 6, 2026:** Published public architecture, benchmark, and technical decision docs.
+- **April 6, 2026:** Added a public workflow walkthrough, FAQ, and public/private status docs.
+- **April 6, 2026:** Enabled GitHub issues and opened concrete next-step work in public.
+- **April 6, 2026:** Rebuilt the README around proof, navigation, and first-time reviewer trust.
+
+---
+
+## Contents
+
+- [What Navigator Is](#what-navigator-is)
+- [Why This Repo Exists](#why-this-repo-exists)
+- [Start Here](#start-here)
+- [What Is Public In This Repo](#what-is-public-in-this-repo)
+- [Architecture At A Glance](#architecture-at-a-glance)
+- [Benchmarks At A Glance](#benchmarks-at-a-glance)
+- [Tech Stack](#tech-stack)
+- [Public Proof](#public-proof)
+- [Open Work](#open-work)
+- [Roadmap](#roadmap)
+- [Repository Structure](#repository-structure)
+- [Related Repos](#related-repos)
 
 ---
 
 ## What Navigator Is
 
-Navigator is a five-layer system that reads any live SaaS interface, retrieves the right procedural context, plans multi-step actions, and executes them with verification. It is not a co-pilot that explains what to click — it is execution infrastructure that either guides users step-by-step or acts autonomously on their behalf. The core bet: AI should not stop at suggestions when the interface itself is observable and actionable. Built for the people who operate software the most — customer success managers, account managers, solutions engineers — and for the AI agents that will eventually do that work entirely.
+Navigator is a five-layer system that reads a live SaaS interface, retrieves the right procedural context, plans multi-step actions, and executes them with verification. It is not a copilot that merely explains what to click. It is execution infrastructure designed to either guide a user step by step or act autonomously on their behalf.
+
+The core bet is simple: AI should not stop at suggestions when the interface itself is observable and actionable.
+
+---
+
+## Why This Repo Exists
+
+This repository exists to make the technical thesis inspectable in public without pretending the entire implementation is open. It is the proof layer for Navigator:
+
+- system shape
+- retrieval choices
+- benchmark rationale
+- workflow examples
+- public progress surface
+
+The goal is that a reviewer can understand what Navigator is, why the architecture is unusual, and why the direction is credible within one or two clicks.
+
+---
+
+## Start Here
+
+If this is your first time in the repo, read in this order:
+
+1. [Workflow walkthrough](./docs/WORKFLOW_WALKTHROUGH.md)
+2. [Benchmarks](./docs/BENCHMARKS.md)
+3. [Architecture](./docs/ARCHITECTURE.md)
+4. [Technical decisions](./docs/TECHNICAL_DECISIONS.md)
+5. [Public status](./docs/PUBLIC_STATUS.md)
 
 ---
 
 ## What Is Public In This Repo
 
-This repo is the public thesis layer for Navigator: architecture, benchmark notes, and technical decisions. The running implementation stays private while the core system shape, retrieval choices, and execution model are documented in the open.
+Public in this repo:
 
-If you're reviewing Navigator for the first time, this repo is meant to answer three questions quickly:
+- Architecture
+- Benchmark notes
+- Technical decisions
+- A representative end-to-end workflow walkthrough
+- FAQ and public/private status
+- Active public issue tracker
 
-- What does the system do?
-- Why is the architecture different from a standard copilot or RAG stack?
-- Is there enough technical depth here to believe the product direction is real?
+Not public in this repo:
 
----
+- Full production implementation
+- Internal evaluation corpus
+- Private execution traces
+- Internal extension/runtime code
 
-## Example Workflow
-
-One concrete example: "Add a teammate to a Jira project."
-
-1. Navigator reads the live Jira UI and identifies the current page state.
-2. It retrieves the most useful prior workflow trace plus the relevant doc section on project permissions.
-3. It plans the next actions, such as opening project settings, checking role requirements, and selecting the correct access control screen.
-4. It executes each step with verification and falls back to guided mode if confidence drops too low.
-
-That is the core product shape: perception, retrieval, planning, execution, and memory working together on a real interface.
+That split is intentional. The repo is meant to show the thesis clearly without overclaiming that every production surface is already public.
 
 ---
 
-## Architecture
+## Architecture At A Glance
 
-```
-                    ┌──────────────────────────────────────┐
-                    │             Navigator                  │
-                    │    AI Execution Layer for SaaS        │
-                    └──────────────┬───────────────────────┘
-                                   │
-         ┌─────────────────────────▼──────────────────────────┐
-         │  Layer 1 — Perception (ScreenSense)                  │
-         │  WebMCP first, DOM + accessibility tree fallback     │
-         │  Output: structured ScreenState JSON                 │
-         └─────────────────────────┬──────────────────────────┘
-                                   │
-         ┌─────────────────────────▼──────────────────────────┐
-         │  Layer 2 — Knowledge                                 │
-         │  Convex vector search (~20ms)                        │
-         │  CLaRa 7B re-rank by planning utility (~200ms)      │
-         │  PageIndex doc tree navigation (~150ms)              │
-         └─────────────────────────┬──────────────────────────┘
-                                   │
-         ┌─────────────────────────▼──────────────────────────┐
-         │  Layer 3 — Reasoning (Claude Sonnet)                 │
-         │  screen state + traces + docs → action plan          │
-         │  confidence < 0.80 → guided mode (no auto-execute)  │
-         └─────────────────────────┬──────────────────────────┘
-                                   │
-         ┌─────────────────────────▼──────────────────────────┐
-         │  Layer 4 — Execution (client-side)                   │
-         │  act → observe → verify loop                         │
-         │  WebMCP tool call or DOM click fallback              │
-         └─────────────────────────┬──────────────────────────┘
-                                   │
-         ┌─────────────────────────▼──────────────────────────┐
-         │  Layer 5 — Memory (Convex)                           │
-         │  CLaRa compression runs async after each execution  │
-         │  Same query: 5.2s (week 1) → 2.1s (month 3)        │
-         └────────────────────────────────────────────────────┘
+Navigator is organized into five layers:
+
+1. **Perception** reads the live interface.
+2. **Knowledge** retrieves traces and documentation.
+3. **Reasoning** turns intent into a structured plan.
+4. **Execution** acts and verifies outcomes.
+5. **Memory** stores traces so future planning improves over time.
+
+```text
+[Intent]
+   |
+   v
+Perception -> Knowledge -> Reasoning -> Execution -> Memory
 ```
 
+The important design constraint is separation: planning and execution should not be one opaque step.
+
+Full detail: [Architecture](./docs/ARCHITECTURE.md)
+
 ---
 
-## Benchmarks
+## Benchmarks At A Glance
 
-These numbers drove the architectural decisions — not vendor marketing claims.
+These are architectural decision benchmarks, not vendor-style marketing claims.
 
-| Retrieval method | Task | Accuracy (Top-1) | Latency (p50) |
-|---|---|---|---|
-| CLaRa 7B | Workflow trace retrieval | **61%** | **43ms** |
-| Classic RAG (BM25 + dense, no re-rank) | Workflow trace retrieval | 51% | 180ms |
-| PageIndex | Documentation retrieval (FinanceBench) | **98.7%** | — |
-| Vector RAG (512-token chunks, cosine) | Documentation retrieval (FinanceBench) | ~50% | — |
+| Retrieval task | Better approach | Result |
+|---|---|---|
+| Workflow trace retrieval | **CLaRa 7B** | **0.61 Top-1** vs 0.51 for classic RAG |
+| Documentation retrieval | **PageIndex** | **98.7%** vs ~50% for vector RAG |
 
-CLaRa is 4.2x faster than classic RAG at p50, with 10pp better accuracy. The gap exists because CLaRa was trained to optimize for planning utility, not semantic similarity — it finds the trace that helped plan a similar task, not the one that sounds most like the query.
+Why this matters:
 
-PageIndex beats vector RAG by ~49pp on structured documentation because SaaS help centers are hierarchical — chunking destroys the structural context that answers the question.
+- Workflow traces should be retrieved by planning utility, not similarity alone.
+- Structured documentation should be navigated as a hierarchy, not flattened into chunks.
+
+Full detail: [Benchmarks](./docs/BENCHMARKS.md)
 
 ---
 
 ## Tech Stack
 
-| Layer | Technology | Decision |
+| Layer | Technology | Why it is here |
 |---|---|---|
-| Language | TypeScript (everywhere) | No polyglot tax; Zod at all boundaries |
-| Extension UI | Preact + Shadow DOM | 3KB vs React 40KB; full style isolation |
-| Backend | Convex | Replaces Postgres + Redis + queue in one runtime |
-| Trace retrieval | CLaRa 7B | Planning utility over semantic similarity |
-| Doc retrieval | PageIndex | Hierarchical structure awareness |
-| Reasoning | Claude Sonnet | Tool-use structured output; confidence scoring |
-| Interface layer | WebMCP | W3C standard; 89% token efficiency vs screenshots |
-| Build | esbuild / tsup | Fast, minimal config |
-| Testing | Vitest + Zod | Type-safe assertions; schema validation |
+| Language | TypeScript | Shared types across interface, planner, and backend boundaries |
+| Backend | Convex | Simpler real-time backend surface for an early-stage agent system |
+| Extension UI | Preact + Shadow DOM | Lightweight injected UI with strong style isolation |
+| Trace retrieval | CLaRa 7B | Planning utility over similarity |
+| Docs retrieval | PageIndex | Hierarchical retrieval for structured help centers |
+| Reasoning | Claude Sonnet | Structured planning and tool-oriented output |
+
+Full detail: [Technical decisions](./docs/TECHNICAL_DECISIONS.md)
 
 ---
 
-## System Layers
+## Public Proof
 
-| # | Layer | What it does |
-|---|---|---|
-| 1 | Perception | Checks `navigator.modelContext` (WebMCP) first; falls back to DOM serialization + accessibility tree. MutationObserver tracks changes. Nothing leaves the browser until the user queries. |
-| 2 | Knowledge | Convex vector search finds candidates; CLaRa re-ranks by planning utility; PageIndex navigates the doc tree. Total: ~380ms cold. |
-| 3 | Reasoning | Single Claude Sonnet call. Returns structured action plan with confidence scores per step. Below 0.80 triggers guided mode. ~1.2s, ~$0.003/plan. |
-| 4 | Execution | Multi-signal element matching: text > aria-label > role > position. WebMCP tool call or DOM click. MutationObserver for DOM stabilization between steps. |
-| 5 | Memory | Full decision trace stored after every execution. CLaRa compression is an async background job. Compounding effect: traces improve retrieval quality over time. |
+Core docs:
+
+- [Architecture](./docs/ARCHITECTURE.md)
+- [Benchmarks](./docs/BENCHMARKS.md)
+- [Technical decisions](./docs/TECHNICAL_DECISIONS.md)
+- [Workflow walkthrough](./docs/WORKFLOW_WALKTHROUGH.md)
+- [Public status](./docs/PUBLIC_STATUS.md)
+- [FAQ](./docs/FAQ.md)
+
+External proof surfaces:
+
+- [Issue #1: public workflow walkthrough](https://github.com/hrshitkunwar-tech/navigator-public/issues/1)
+- [Issue #2: expand retrieval evaluation](https://github.com/hrshitkunwar-tech/navigator-public/issues/2)
+- [Issue #3: lightweight public demo artifact](https://github.com/hrshitkunwar-tech/navigator-public/issues/3)
+- [Issue #4: more public workflow examples](https://github.com/hrshitkunwar-tech/navigator-public/issues/4)
 
 ---
 
-## Why Vector-Light
+## Open Work
 
-Navigator does not default to `embed → vector DB → cosine similarity → rerank` for every retrieval problem. That pipeline is optimized for semantic search on unstructured text. Navigator's retrieval problems are structural:
+Current public next steps:
 
-- Workflow traces need to be ranked by planning utility, not semantic similarity
-- Documentation needs to be navigated as a tree, not chunked into flat passages
+- [#1 Add a public end-to-end workflow walkthrough](https://github.com/hrshitkunwar-tech/navigator-public/issues/1)
+- [#2 Expand retrieval evaluation beyond the initial benchmark](https://github.com/hrshitkunwar-tech/navigator-public/issues/2)
+- [#3 Add a lightweight public demo artifact](https://github.com/hrshitkunwar-tech/navigator-public/issues/3)
+- [#4 Publish more public examples of supported workflow shapes](https://github.com/hrshitkunwar-tech/navigator-public/issues/4)
 
-CLaRa and PageIndex are purpose-built for these shapes. Convex handles the narrow cold-start cases where vector search is still useful.
+This repo should read like an active public thesis, not a one-shot docs drop.
+
+---
+
+## Roadmap
+
+### Now
+
+- Make the public thesis legible in one or two clicks
+- Document the retrieval and execution architecture clearly
+- Expose concrete next-step work in public
+
+### Next
+
+- Add a deeper public workflow walkthrough with more screenshots or trace structure
+- Publish broader retrieval evaluation notes as the corpus grows
+- Add a lightweight demo artifact that shows the perception-to-execution loop
+
+### Later
+
+- Publish more examples of supported software workflow shapes
+- Open additional system surfaces as the public/private split stabilizes
+- Expand the proof layer beyond docs into richer public artifacts
 
 ---
 
@@ -145,42 +218,15 @@ navigator-public/
 └── docs/
     ├── ARCHITECTURE.md
     ├── BENCHMARKS.md
-    └── TECHNICAL_DECISIONS.md
+    ├── TECHNICAL_DECISIONS.md
+    ├── WORKFLOW_WALKTHROUGH.md
+    ├── PUBLIC_STATUS.md
+    └── FAQ.md
 ```
 
 ---
 
-## Read Next
+## Related Repos
 
-- [Architecture](./docs/ARCHITECTURE.md)
-- [Benchmarks](./docs/BENCHMARKS.md)
-- [Technical decisions](./docs/TECHNICAL_DECISIONS.md)
-
----
-
-## Roadmap
-
-### Now
-
-- Publish the public architecture, benchmark, and decision docs
-- Tighten the system story around perception, retrieval, and verified execution
-- Expand the public benchmark notes so claims in the README are inspectable
-
-### Next
-
-- Add a deeper walkthrough of one end-to-end workflow
-- Publish more retrieval evaluations as the trace corpus grows
-- Add a simple public demo artifact for the perception and execution loop
-
-### Later
-
-- Release public examples of tool adapters and execution traces
-- Expand beyond customer-facing workflows into broader software operations
-- Open more of the system surface once the public/private split is stable
-
----
-
-## Links
-
-- Perception layer experiment: [VisionGuide](https://github.com/hrshitkunwar-tech/VisionGuide) — screenshot → Gemini → real-time UI guidance overlay
-- Applied execution experiment: [job](https://github.com/hrshitkunwar-tech/job) — CareerAgent: score → tailor → apply, local-first
+- [VisionGuide](https://github.com/hrshitkunwar-tech/VisionGuide) — perception-layer experiment
+- [job](https://github.com/hrshitkunwar-tech/job) — applied execution experiment
