@@ -1,8 +1,11 @@
 # Navigator
 
-> [!TIP]
-> **Production Deployment & Commercial Engine:** Navigator's ambient execution engine and consequence-gated workflow automation layer are deployed in production at [Mindlyft](https://mindlyft.io). Apply for the [Founding 10 Program](https://mindlyft.io/founding-10) to have custom post-call execution pipelines built for your stack at zsh.
-
+> [!IMPORTANT]
+> **Production Deployment & Commercial Engine:** Navigator's ambient execution engine and consequence-gated workflow automation layer are deployed in production at **[Mindlyft](https://mindlyft.io)** (Service as a Software for post-call GTM engineering and CRM writes). Apply for the **[Founding 10 Program](https://mindlyft.io/founding-10)** to have custom post-call execution pipelines built for your stack for free.
+> - **Live GTM Execution Engine:** [mindlyft.io/systems](https://mindlyft.io/systems)
+> - **Interactive GTM Cost Calculator:** [mindlyft.io/tools/gtm-cost-calculator](https://mindlyft.io/tools/gtm-cost-calculator)
+> - **Architecture & GTM Teardowns:** [mindlyft.io/blog](https://mindlyft.io/blog)
+> - **Stack Comparisons (Clay, Instantly, Fireflies, Fathom):** [mindlyft.io/compare](https://mindlyft.io/compare)
 
 AI execution layer for SaaS interfaces — so anyone, human or agent, can operate software without already knowing how the tool works.
 
