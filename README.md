@@ -1,7 +1,7 @@
 # Navigator
 
 > [!IMPORTANT]
-> **Production Deployment & Commercial Engine:** Navigator's ambient execution engine and consequence-gated workflow automation layer are deployed in production at **[Mindlyft](https://mindlyft.io)** (Service as a Software for post-call GTM engineering and CRM writes). Apply for the **[Founding 10 Program](https://mindlyft.io/founding-10)** to have custom post-call execution pipelines built for your stack for free.
+> **Production Deployment & Commercial Engine:** Navigator's ambient execution engine and consequence-gated workflow automation layer are deployed in production at **[Mindlyft](https://mindlyft.io)** (Service as a Software for post-call GTM engineering and CRM writes). Explore **[GTM Engineering Services](https://mindlyft.io/services)**, see **[what a cycle costs](https://mindlyft.io/pricing)**, or book a **[$500 5-day post-call automation sprint on Contra](https://contra.com/s/RmWZoMo3-end-to-end-post-call-automation-and-crm-sync-engine?r=harshit_kunwar_m0yu7crm)** (or **[30-min teardown on Topmate](https://topmate.io/harshit_kunwar/2370556)**).
 > - **Live GTM Execution Engine:** [mindlyft.io/systems](https://mindlyft.io/systems)
 > - **Interactive GTM Cost Calculator:** [mindlyft.io/tools/gtm-cost-calculator](https://mindlyft.io/tools/gtm-cost-calculator)
 > - **Architecture & GTM Teardowns:** [mindlyft.io/blog](https://mindlyft.io/blog)
@@ -237,3 +237,12 @@ navigator-public/
 
 - [VisionGuide](https://github.com/hrshitkunwar-tech/VisionGuide) — perception-layer experiment
 - [job](https://github.com/hrshitkunwar-tech/job) — applied execution experiment
+
+
+---
+
+### Ship This In Your Stack
+- **[5-Day Post-Call Automation Build ($500 flat, Contra escrow)](https://contra.com/s/RmWZoMo3-end-to-end-post-call-automation-and-crm-sync-engine?r=harshit_kunwar_m0yu7crm)**
+- **[30-Min Pipeline Teardown (₹1,999, Topmate)](https://topmate.io/harshit_kunwar/2370556)**
+- **[Operator Toolkits & Skills ($29–$59, Whop)](https://whop.com/mindlyft-io/products/)**
+- **[GTM Engineering Services](https://mindlyft.io/services)** · **[Pricing](https://mindlyft.io/pricing)**
