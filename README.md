@@ -6,6 +6,9 @@
 > - **Interactive GTM Cost Calculator:** [mindlyft.io/tools/gtm-cost-calculator](https://mindlyft.io/tools/gtm-cost-calculator)
 > - **Architecture & GTM Teardowns:** [mindlyft.io/blog](https://mindlyft.io/blog)
 > - **Stack Comparisons (Chorus vs Gong, Clay vs Instantly, Fireflies, Fathom):** [mindlyft.io/compare](https://mindlyft.io/compare)
+> - **Shipped Customer Results:** [mindlyft.io/docs/customer-results](https://mindlyft.io/docs/customer-results)
+> - **AI Agent Observability for GTM:** [mindlyft.io/blog/ai-agent-observability](https://mindlyft.io/blog/ai-agent-observability)
+> - **$500 Single Workflow Build:** [mindlyft.io/pricing](https://mindlyft.io/pricing)
 
 AI execution layer for SaaS interfaces — so anyone, human or agent, can operate software without already knowing how the tool works.
 
